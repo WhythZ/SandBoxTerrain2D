@@ -6,16 +6,30 @@ using UnityEngine.UIElements;
 
 public class TerrainGenerator : MonoBehaviour
 {
-    [SerializeField] private int worldSize = 100;          //正方形噪声材质图像的边长
+    [Header("Tile Sprites")]
+    [SerializeField] private Sprite grass;                  //石头瓦片
+    [SerializeField] private Sprite dirt;                   //泥土瓦片
+    [SerializeField] private Sprite stone;                  //石头瓦片
+
+    [Header("Terrain Size")]
+    [SerializeField] private int worldSize = 100;           //正方形噪声材质图像的边长
+    [SerializeField] private int heightMultiplier = 25;     //为地形厚度增加[0,5]的随机增量
+    [SerializeField] private int heightAddition = 25;       //地形的基础厚度
+
+    [Header("Terrain Shape")]
+    [SerializeField] private float surfaceThrehold = 0.2f;  //该值越大，地形越稀疏，越能体现caveFreq，洞穴越多
+    [SerializeField] private float terrainFreq = 0.05f;     //与地形波动相关的柏林噪声频率
+
+    [Header("Terrain Layer")]
+    [SerializeField] private int dirtLayerHeight = 5;       //泥土层的厚度
+
+    [Header("Terrain Caves")]
+    [SerializeField] private bool isGenerateCaves = false;  //是否生成洞穴
+    [SerializeField] private float caveFreq = 0.05f;        //与空洞出现的频率正相关的柏林噪声频率
+
+    [Header("Berlin Noise")]
     [SerializeField] private Texture2D noiseTexture;       //存储生成的噪声材质图像
-    [SerializeField] private float seed;                   //随机生成的随机种子
-    [SerializeField] private float caveFreq = 0.05f;       //与空洞出现的频率正相关的柏林噪声频率
-    
-    [SerializeField] private Sprite tile;                  //瓦片的图像材质
-    [SerializeField] private float surfaceValue = 0.2f;    //该值越大，地形越稀疏
-    [SerializeField] private float terrainFreq = 0.05f;    //与地形波动相关的柏林噪声频率
-    [SerializeField] private int heightMultiplier = 25;    //为地形厚度增加[0,5]的随机增量
-    [SerializeField] private int heightAddition = 25;      //地形的基础厚度
+    private float seed;                                    //随机生成的随机种子
 
     private void Start()
     {
@@ -51,21 +65,38 @@ public class TerrainGenerator : MonoBehaviour
             float _height = Mathf.PerlinNoise((x + seed) * terrainFreq, seed * terrainFreq) * heightMultiplier + heightAddition;
             for (int y = 0; y < _height; y++)
             {
-                //仅在点的灰度大于某个[0,1]范围内的阈值时，才生成该点的瓦片；阈值越大越接近白色，生成的瓦片越稀疏
-                //由于noiseTexture是灰度图，所以r、g、b三者均可
-                if (noiseTexture.GetPixel(x, y).r > surfaceValue)
+                //依据高度设置不同的地形瓦片层
+                Sprite _sprite;
+                if (y > _height - 1)
+                    _sprite = grass;
+                else if (y > _height - dirtLayerHeight)
+                    _sprite = dirt;
+                else
+                    _sprite = stone;
+
+                //控制是否生成洞穴
+                if (isGenerateCaves)
                 {
-                    GameObject _newTile = new GameObject();
-                    _newTile.name = "Tile";
-                    _newTile.transform.parent = this.transform;
-                    _newTile.AddComponent<SpriteRenderer>();
-                    _newTile.GetComponent<SpriteRenderer>().sprite = tile;
-                    //偏移量0.5f是为了确保和Unity的网格重合，好看一点
-                    _newTile.transform.position = new Vector2(x + 0.5f, y + 0.5f);
+                    //仅在点的灰度大于某个[0,1]范围内的阈值时才生成该点瓦片；由于noiseTexture是灰度图，所以rgb三者均可（越大越接近白色）
+                    if (noiseTexture.GetPixel(x, y).r > surfaceThrehold)
+                        PlaceTile(_sprite, x, y);
                 }
+                else
+                    PlaceTile(_sprite, x, y);
             }
         }
     }
+
+    private void PlaceTile(Sprite _sprite, int _x, int _y)
+    {
+        GameObject _newTile = new GameObject();
+        _newTile.name = _sprite.name;
+        _newTile.transform.parent = this.transform;
+        //偏移量0.5f是为了确保和Unity的网格重合，好看一点
+        _newTile.transform.position = new Vector2(_x + 0.5f, _y + 0.5f);
+        _newTile.AddComponent<SpriteRenderer>();
+        _newTile.GetComponent<SpriteRenderer>().sprite = _sprite;
+    }    
 
     private void GenerateNoiseTexture()
     {
