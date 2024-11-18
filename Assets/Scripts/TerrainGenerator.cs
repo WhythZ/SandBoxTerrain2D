@@ -1,12 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
+
+enum TileType
+{
+    TreeLeaf,
+    TreeLog,
+    Grass,
+    Dirt,
+    Stone
+}
 
 public class TerrainGenerator : MonoBehaviour
 {
     [Header("Tile Sprites")]
+    [SerializeField] private Sprite treeLeaf;               //树叶瓦片
+    [SerializeField] private Sprite treeLog;                //树干瓦片
     [SerializeField] private Sprite grass;                  //石头瓦片
     [SerializeField] private Sprite dirt;                   //泥土瓦片
     [SerializeField] private Sprite stone;                  //石头瓦片
@@ -15,6 +27,9 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] private int worldSize = 100;           //正方形噪声材质图像的边长
     [SerializeField] private int heightMultiplier = 25;     //为地形厚度增加[0,5]的随机增量
     [SerializeField] private int heightAddition = 25;       //地形的基础厚度
+
+    //[Header("Terrain Tiles")]
+    //[SerializeField] private List<>
 
     [Header("Terrain Shape")]
     [SerializeField] private float surfaceThrehold = 0.2f;  //该值越大，地形越稀疏，越能体现caveFreq，洞穴越多
@@ -27,9 +42,14 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] private bool isGenerateCaves = false;  //是否生成洞穴
     [SerializeField] private float caveFreq = 0.05f;        //与空洞出现的频率正相关的柏林噪声频率
 
+    [Header("Surface Trees")]
+    [SerializeField] private float treeChance = 0.07f;      //树木在地表草地上生成的概率
+    [SerializeField] private int maxTreeHeight = 7;         //树干的最大高度
+    [SerializeField] private int minTreeHeight = 4;         //树干的最小高度
+
     [Header("Berlin Noise")]
-    [SerializeField] private Texture2D noiseTexture;       //存储生成的噪声材质图像
-    private float seed;                                    //随机生成的随机种子
+    [SerializeField] private Texture2D noiseTexture;        //存储生成的噪声材质图像
+    private float seed;                                     //随机生成的随机种子
 
     private void Start()
     {
@@ -59,18 +79,21 @@ public class TerrainGenerator : MonoBehaviour
         //}
 
         //取用noiseTexture坐标系的函数y=PerlinNoise(f(x))曲线的下方部分作为地形
-        for (int x = 0; x < worldSize; x++)
+        for (int _x = 0; _x < worldSize; _x++)
         {
             //用x对截取的高度函数曲线引入一个[0,1]范围的的柏林噪声值，在此基础上增加一些计算参数，以生成需要的凹凸不平的地形
-            float _height = Mathf.PerlinNoise((x + seed) * terrainFreq, seed * terrainFreq) * heightMultiplier + heightAddition;
-            for (int y = 0; y < _height; y++)
+            float _height = Mathf.PerlinNoise((_x + seed) * terrainFreq, seed * terrainFreq) * heightMultiplier + heightAddition;
+            for (int _y = 0; _y < _height; _y++)
             {
                 //依据高度设置不同的地形瓦片层
                 Sprite _sprite;
-                if (y > _height - 1)
+                //草地层
+                if (_y > _height - 1)
                     _sprite = grass;
-                else if (y > _height - dirtLayerHeight)
+                //泥土层
+                else if (_y > _height - dirtLayerHeight)
                     _sprite = dirt;
+                //石头层
                 else
                     _sprite = stone;
 
@@ -78,16 +101,45 @@ public class TerrainGenerator : MonoBehaviour
                 if (isGenerateCaves)
                 {
                     //仅在点的灰度大于某个[0,1]范围内的阈值时才生成该点瓦片；由于noiseTexture是灰度图，所以rgb三者均可（越大越接近白色）
-                    if (noiseTexture.GetPixel(x, y).r > surfaceThrehold)
-                        PlaceTile(_sprite, x, y);
+                    if (noiseTexture.GetPixel(_x, _y).r > surfaceThrehold)
+                        GenerateTileAt(_sprite, _x, _y);
                 }
                 else
-                    PlaceTile(_sprite, x, y);
+                    GenerateTileAt(_sprite, _x, _y);
             }
         }
     }
 
-    private void PlaceTile(Sprite _sprite, int _x, int _y)
+    private void GenerateTileAt(Sprite _sprite, int _x, int _y)
+    {
+        //先在对应位置放置砖块，然后检测该砖块可能附带生成的其他东西
+        PlaceTileAt(_sprite,_x, _y);
+
+        //在草地上按概率生成树，注意传入的坐标是y+1（y就会直接覆盖掉草皮）
+        if(_sprite == grass)
+        {
+            int _chance = Mathf.RoundToInt(treeChance * 100);
+            int _random = UnityEngine.Random.Range(0, 100);
+            if (_random < _chance)
+                PlaceTreeAt(_x, _y + 1);
+        }
+    }
+
+    private void PlaceTreeAt(int _x, int _y)
+    {
+        //生成树干
+        int _height = UnityEngine.Random.Range(minTreeHeight, maxTreeHeight);
+        for (int i = 0; i < _height; i++)
+            PlaceTileAt(treeLog, _x, _y + i);
+
+        //生成树叶
+        PlaceTileAt(treeLeaf, _x, _y + _height);
+        PlaceTileAt(treeLeaf, _x - 1, _y + _height);
+        PlaceTileAt(treeLeaf, _x + 1, _y + _height);
+        PlaceTileAt(treeLeaf, _x, _y + _height + 1);
+    }
+
+    private void PlaceTileAt(Sprite _sprite, int _x, int _y)
     {
         GameObject _newTile = new GameObject();
         _newTile.name = _sprite.name;
