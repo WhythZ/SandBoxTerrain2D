@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 277305457}
   - component: {fileID: 277305458}
   m_Layer: 0
-  m_Name: Terrain
+  m_Name: TerrainManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -166,11 +166,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 132512110666be945a40cfaf5a02eadf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  treeLeaf: {fileID: 21300000, guid: 2f27e1bc1e984af48a7bc59057c6904b, type: 3}
-  treeLog: {fileID: 21300000, guid: 35b2efea66fc1ef4fa4388aa5dcca3a9, type: 3}
-  grass: {fileID: 21300000, guid: abc46f9aada9ea64da5d164a1d9e0012, type: 3}
-  dirt: {fileID: 21300000, guid: a970b33520cf9c5459dbdc21fc82a735, type: 3}
-  stone: {fileID: 21300000, guid: b3f787e51ebbf02488445a0d53c957e3, type: 3}
   worldSize: 100
   heightMultiplier: 25
   heightAddition: 25
@@ -179,7 +174,9 @@ MonoBehaviour:
   dirtLayerHeight: 5
   isGenerateCaves: 0
   caveFreq: 0.05
-  treeChance: 0.07
+  treeChance: 0.1
+  maxTreeHeight: 7
+  minTreeHeight: 4
   noiseTexture: {fileID: 1446670449}
 --- !u!1 &519420028
 GameObject:
@@ -321,9 +318,62 @@ Texture2D:
     offset: 0
     size: 0
     path: 
+--- !u!1 &1839194603
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1839194605}
+  - component: {fileID: 1839194604}
+  m_Layer: 0
+  m_Name: TileManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1839194604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1839194603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b08a0760ae298e54f8fb9e48e172d55c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilePrefabDict:
+  - {fileID: 2084391192585946988, guid: 2a8b73cdcc58a2b43b11df8b544f6e8a, type: 3}
+  - {fileID: 5958143774984410671, guid: 2429c4a26dcab554f9952b3f5e91a6b2, type: 3}
+  - {fileID: 5775294823625027674, guid: 68d0166bbf010d24c97423dec1d7bed0, type: 3}
+  - {fileID: 4658007079524541869, guid: cf431c3f506f1624e9e88109f6cf358a, type: 3}
+  - {fileID: 1703924926568933542, guid: 24dbd2ab989b7004d997e343a5921356, type: 3}
+  - {fileID: 1004254392483327814, guid: f8de072d6eaa20f42810f8439af9cb78, type: 3}
+  tileList: []
+--- !u!4 &1839194605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1839194603}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 49.96026, y: 30.795504, z: -0.2020438}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 519420032}
+  - {fileID: 1839194605}
   - {fileID: 277305457}
