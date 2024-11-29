@@ -93,10 +93,9 @@ public class TilemapManager : Manager<TilemapManager>
         //设置实例化的瓦片对象的位置（_x与_y是离散的整数世界坐标，偏移量0.5f确保和网格重合，好看一些）
         _newTile.transform.position = new Vector2(_x + 0.5f, _y + 0.5f);
 
-        //计算该瓦片所在的区块编号
-        int _chunkX = _x / ChunkLength;
-        int _chunkY = _y / ChunkLength;
-        int _chunkIdx = _chunkY * chunkNumSqrt + _chunkX * chunkNumSqrt;
+        //计算该瓦片所在的区块编号的索引值
+        int _chunkIdx = (_y / chunkLength) * chunkNumSqrt + (_x / chunkLength);
+
         Debug.Log(_chunkIdx);
 
         //将瓦片挂载在正确的区块上以便管理
