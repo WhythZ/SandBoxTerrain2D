@@ -130,5 +130,9 @@ public enum TileType
     Dirt = 2,
     DirtGrass = 3,
     TreeLog = 4,
-    TreeLeaf = 5
+    TreeLeaf = 5,
+    Coal = 6,
+    Iron = 7,
+    Gold = 8,
+    Diamond = 9
 }

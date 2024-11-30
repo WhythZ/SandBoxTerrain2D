@@ -122,6 +122,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &227463074
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 227463076}
+  - component: {fileID: 227463075}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &227463075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227463074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a124d42a1829f3418ccd779e4ea7b08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &227463076
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227463074}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 60.559128, y: 62.715992, z: -0.107086785}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &277305456
 GameObject:
   m_ObjectHideFlags: 0
@@ -166,14 +210,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 132512110666be945a40cfaf5a02eadf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  caveNoiseTex: {fileID: 0}
-  terrainFreq: 0.07
-  heightMultiplier: 25
-  heightAddition: 25
+  seed: 0
+  caveSpreadTex: {fileID: 0}
+  coalSpreadTex: {fileID: 0}
+  ironSpreadTex: {fileID: 0}
+  goldSpreadTex: {fileID: 0}
+  diamondSpreadTex: {fileID: 0}
+  terrainRelief: 0.05
+  heightMultiplier: 35
+  heightAddition: 50
+  coalRarity: 0.2
+  coalSize: 0.18
+  ironRarity: 0.18
+  ironSize: 0.16
+  goldRarity: 0.13
+  goldSize: 0.11
+  diamondRarity: 0.12
+  diamondSize: 0.02
   dirtLayerHeight: 5
   isGenerateCaves: 1
-  caveFreq: 0.05
-  caveThrehold: 0.2
+  caveFreq: 0.08
+  caveSize: 0.2
   treeChance: 0.1
   maxTreeHeight: 7
   minTreeHeight: 4
@@ -263,7 +320,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 64, y: 40, z: -1}
+  m_LocalPosition: {x: 64, y: 72, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -305,6 +362,10 @@ MonoBehaviour:
   - {fileID: 4658007079524541869, guid: cf431c3f506f1624e9e88109f6cf358a, type: 3}
   - {fileID: 1703924926568933542, guid: 24dbd2ab989b7004d997e343a5921356, type: 3}
   - {fileID: 1004254392483327814, guid: f8de072d6eaa20f42810f8439af9cb78, type: 3}
+  - {fileID: 970826021783321727, guid: 1f2cc8c28ed1339489604e98240cdace, type: 3}
+  - {fileID: 4249167746949813970, guid: 3b3d7de9c9fbdc54991b4c39a0040c94, type: 3}
+  - {fileID: 5200925216386380273, guid: 2cf4b78d28360714395c7f8d209e10e8, type: 3}
+  - {fileID: 4127952908922878299, guid: aec66fb02ec56c740a88fd700fe544cf, type: 3}
   worldLength: 128
   chunkLength: 16
   chunks: []
@@ -329,5 +390,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 519420032}
-  - {fileID: 1839194605}
+  - {fileID: 227463076}
   - {fileID: 277305457}
+  - {fileID: 1839194605}
