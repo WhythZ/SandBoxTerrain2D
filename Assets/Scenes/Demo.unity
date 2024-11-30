@@ -166,13 +166,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 132512110666be945a40cfaf5a02eadf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldLength: 128
   caveNoiseTex: {fileID: 0}
   terrainFreq: 0.07
   heightMultiplier: 25
   heightAddition: 25
   dirtLayerHeight: 5
-  isGenerateCaves: 0
+  isGenerateCaves: 1
   caveFreq: 0.05
   caveThrehold: 0.2
   treeChance: 0.1
@@ -264,7 +263,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 50.77609, y: 42.431705, z: -76.74685}
+  m_LocalPosition: {x: 64, y: 40, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -306,8 +305,10 @@ MonoBehaviour:
   - {fileID: 4658007079524541869, guid: cf431c3f506f1624e9e88109f6cf358a, type: 3}
   - {fileID: 1703924926568933542, guid: 24dbd2ab989b7004d997e343a5921356, type: 3}
   - {fileID: 1004254392483327814, guid: f8de072d6eaa20f42810f8439af9cb78, type: 3}
+  worldLength: 128
   chunkLength: 16
   chunks: []
+  tiles: []
 --- !u!4 &1839194605
 Transform:
   m_ObjectHideFlags: 0

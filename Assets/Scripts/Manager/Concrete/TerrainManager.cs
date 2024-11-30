@@ -7,7 +7,6 @@ using UnityEngine.UIElements;
 
 public class TerrainManager : Manager<TerrainManager>
 {
-    #region ClassFields
     [Header("Berlin Noise")]
     private float seed;                                     //随机生成的随机种子
     [SerializeField] private Texture2D caveNoiseTex;        //存储生成的地图洞穴的噪声材质图像
@@ -27,15 +26,11 @@ public class TerrainManager : Manager<TerrainManager>
 
     [Header("Trees")]
     [SerializeField] private float treeChance = 0.07f;      //树木在地表草地上生成的概率
-    [SerializeField] private int maxTreeHeight = 7;         //树干的最大高度
-    [SerializeField] private int minTreeHeight = 4;         //树干的最小高度
-    #endregion
-
-    #region ClassProperties
     public float TreeChance { get => treeChance; }
+    [SerializeField] private int maxTreeHeight = 7;         //树干的最大高度
     public int MaxTreeHeight { get => maxTreeHeight; }
+    [SerializeField] private int minTreeHeight = 4;         //树干的最小高度
     public int MinTreeHeight { get => minTreeHeight; }
-    #endregion
 
     private void Start()
     {
@@ -63,15 +58,16 @@ public class TerrainManager : Manager<TerrainManager>
         //}
 
         //在实际生成地形前先初始化区块
-        TilemapManager.instance.InitChunks();
+        TilemapManager.instance.InitTilemap();
 
         //取用noiseTexture坐标系的函数y=PerlinNoise(f(x))曲线的下方部分作为地形
-        for (int _x = 0; _x < TilemapManager.instance.WorldLength; _x++)
+        for (int _y = 0; _y < TilemapManager.instance.WorldLength; _y++)
         {
-            //用x对用于截取整个地图的曲线引入一个[0,1]范围的的柏林噪声值，在此基础上增加一些计算参数，以生成需要的凹凸不平的地形
-            float _height = Mathf.PerlinNoise((_x + seed) * terrainFreq, seed * terrainFreq) * heightMultiplier + heightAddition;
-            for (int _y = 0; _y < TilemapManager.instance.WorldLength; _y++)
+            for (int _x = 0; _x < TilemapManager.instance.WorldLength; _x++)
             {
+                //用_x对用于截取整个地图的曲线引入一个[0,1]范围的的柏林噪声值，在此基础上增加一些计算参数，以生成需要的凹凸不平的地形
+                float _height = Mathf.PerlinNoise((_x + seed) * terrainFreq, seed * terrainFreq) * heightMultiplier + heightAddition;
+
                 //依据高度设置不同的地形瓦片层
                 TileType _tileType;
                 //岩石层
@@ -85,19 +81,22 @@ public class TerrainManager : Manager<TerrainManager>
                     _tileType = TileType.DirtGrass;
                 //空气层
                 else
-                    _tileType = TileType.None;
+                    _tileType = TileType.Air;
 
                 //控制是否生成洞穴
                 if (isGenerateCaves)
                 {
                     //仅在点的灰度大于某个[0,1]范围内的阈值时才生成该点瓦片；由于noiseTexture是灰度图，所以rgb三者均可（越大越接近白色）
                     if (caveNoiseTex.GetPixel(_x, _y).r > caveThrehold)
-                        TilemapManager.instance.GenerateTileAt(_tileType, _x, _y);
+                        TilemapManager.instance.PreSetTileAt(_tileType, _x, _y);
                 }
                 else
-                    TilemapManager.instance.GenerateTileAt(_tileType, _x, _y);
+                    TilemapManager.instance.PreSetTileAt(_tileType, _x, _y);
             }
         }
+
+        //实际根据上述设置的瓦片类型生成瓦片地图
+        TilemapManager.instance.GenerateTilemap();
     }
 
     private void GenerateNoiseTexture(ref Texture2D _noiseTex, float _freq)

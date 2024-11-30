@@ -12,6 +12,7 @@ public abstract class TileObject : MonoBehaviour
 
     [Header("Type")]
     [SerializeField] protected TileType type;
+    public TileType Type { get => type; }
 
     [Header("Texture")]
     [SerializeField] protected Sprite defaultTexture;
