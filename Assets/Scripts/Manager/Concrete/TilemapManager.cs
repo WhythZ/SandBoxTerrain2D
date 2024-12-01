@@ -139,5 +139,7 @@ public enum TileType
     Coal = 6,
     Iron = 7,
     Gold = 8,
-    Diamond = 9
+    Diamond = 9,
+    Sand = 10,
+    Snow = 11
 }

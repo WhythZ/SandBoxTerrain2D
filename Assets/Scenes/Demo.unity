@@ -215,79 +215,58 @@ MonoBehaviour:
   heightMultiplier: 35
   heightAddition: 50
   dirtLayerHeight: 5
-  isGenerateCaves: 1
   caveSpreadTex: {fileID: 0}
+  isGenerateCaves: 1
   caveFreq: 0.08
   caveSize: 0.2
-  biomeFreq: 0.05
-  biomeSpread:
-    serializedVersion: 2
-    key0: {r: 0.06406999, g: 1, b: 0, a: 1}
-    key1: {r: 1, g: 0.7694856, b: 0, a: 1}
-    key2: {r: 1, g: 1, b: 1, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 31226
-    ctime1: 47288
-    ctime2: 65535
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 1
-    m_ColorSpace: -1
-    m_NumColorKeys: 3
-    m_NumAlphaKeys: 2
   biomeMapTex: {fileID: 0}
+  biomeFreq: 0.05
   biomes:
-  - coalSpreadTex: {fileID: 0}
-    ironSpreadTex: {fileID: 0}
-    goldSpreadTex: {fileID: 0}
-    diamondSpreadTex: {fileID: 0}
-    coalRarity: 0
-    coalSize: 0
-    ironRarity: 0
-    ironSize: 0
-    goldRarity: 0
-    goldSize: 0
-    diamondRarity: 0
-    diamondSize: 0
-  - coalSpreadTex: {fileID: 0}
-    ironSpreadTex: {fileID: 0}
-    goldSpreadTex: {fileID: 0}
-    diamondSpreadTex: {fileID: 0}
-    coalRarity: 0
-    coalSize: 0
-    ironRarity: 0
-    ironSize: 0
-    goldRarity: 0
-    goldSize: 0
-    diamondRarity: 0
-    diamondSize: 0
-  - coalSpreadTex: {fileID: 0}
-    ironSpreadTex: {fileID: 0}
-    goldSpreadTex: {fileID: 0}
-    diamondSpreadTex: {fileID: 0}
-    coalRarity: 0
-    coalSize: 0
-    ironRarity: 0
-    ironSize: 0
-    goldRarity: 0
-    goldSize: 0
-    diamondRarity: 0
-    diamondSize: 0
+  - color: {r: 0, g: 1, b: 0, a: 0}
+    biomeSize: 0.3
+    ores:
+      coalSpreadTex: {fileID: 0}
+      ironSpreadTex: {fileID: 0}
+      goldSpreadTex: {fileID: 0}
+      diamondSpreadTex: {fileID: 0}
+      coalRarity: 0.2
+      coalSize: 0.18
+      ironRarity: 0.18
+      ironSize: 0.16
+      goldRarity: 0.13
+      goldSize: 0.11
+      diamondRarity: 0.12
+      diamondSize: 0.02
+  - color: {r: 1, g: 1, b: 0, a: 0}
+    biomeSize: 0.3
+    ores:
+      coalSpreadTex: {fileID: 0}
+      ironSpreadTex: {fileID: 0}
+      goldSpreadTex: {fileID: 0}
+      diamondSpreadTex: {fileID: 0}
+      coalRarity: 0.2
+      coalSize: 0.18
+      ironRarity: 0.18
+      ironSize: 0.16
+      goldRarity: 0.13
+      goldSize: 0.11
+      diamondRarity: 0.12
+      diamondSize: 0.02
+  - color: {r: 0, g: 1, b: 1, a: 0}
+    biomeSize: 0.3
+    ores:
+      coalSpreadTex: {fileID: 0}
+      ironSpreadTex: {fileID: 0}
+      goldSpreadTex: {fileID: 0}
+      diamondSpreadTex: {fileID: 0}
+      coalRarity: 0.2
+      coalSize: 0.18
+      ironRarity: 0.18
+      ironSize: 0.16
+      goldRarity: 0.13
+      goldSize: 0.11
+      diamondRarity: 0.12
+      diamondSize: 0.02
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,6 +399,8 @@ MonoBehaviour:
   - {fileID: 4249167746949813970, guid: 3b3d7de9c9fbdc54991b4c39a0040c94, type: 3}
   - {fileID: 5200925216386380273, guid: 2cf4b78d28360714395c7f8d209e10e8, type: 3}
   - {fileID: 4127952908922878299, guid: aec66fb02ec56c740a88fd700fe544cf, type: 3}
+  - {fileID: 3099905327546169587, guid: 71157782fd675d44db2308c0837d66cc, type: 3}
+  - {fileID: 5356770939401878946, guid: 69c1857c9bb25a84c9dd7e1ec15a9be8, type: 3}
   worldLength: 128
   chunkLength: 16
   chunks: []

@@ -20,17 +20,15 @@ public class TerrainManager : Manager<TerrainManager>
     [SerializeField] private int dirtLayerHeight = 5;         //泥土层的厚度
 
     [Header("Cave Settings")]
-    [SerializeField] private bool isGenerateCaves = false;    //是否生成洞穴
     [SerializeField] private Texture2D caveSpreadTex;         //存储生成的地图洞穴的噪声图
+    [SerializeField] private bool isGenerateCaves = false;    //是否生成洞穴
     [SerializeField] private float caveFreq = 0.08f;          //与空洞出现的频率正相关的柏林噪声频率
     [SerializeField] private float caveSize = 0.2f;           //该值越大，越能体现caveFreq（洞穴多）
 
     [Header("Biome Settings")]
-    [SerializeField] private float biomeFreq = 0.05f;         //控制各群系的占比
-    [SerializeField] private Gradient biomeSpread;            //控制各群系的占比
     [SerializeField] private Texture2D biomeMapTex;           //生物群系的分布噪声图
+    public float biomeFreq = 0.5f;                            //群系的频率
     [SerializeField] private BiomeSettings[] biomes;          //设置各群系的属性
-    private Color[] biomeColors;                              //存储在Gradient中设置的各群系颜色
 
     public void GenerateTerrain(int _seed)
     {
@@ -51,9 +49,17 @@ public class TerrainManager : Manager<TerrainManager>
             {
                 //用_x对用于截取整个地图的曲线引入一个[0,1]范围的的柏林噪声值，在此基础上增加一些计算参数，以生成需要的凹凸不平的地形
                 float _height = Mathf.PerlinNoise((_x + seed) * terrainRelief, seed * terrainRelief) * heightMultiplier + heightAddition;
-                //获取当前生物群系种类
-                Color _biomeColor = biomeMapTex.GetPixel(_x, _y);
-                int _bTypeIdx = System.Array.IndexOf(biomeColors, _biomeColor);
+                //获取当前生物群系种类，对于无群系，的使用0作为默认群系种类
+                int _bTypeIdx = 0;
+                Color _col = biomeMapTex.GetPixel(_x, _y);
+                for (int i = 0; i < biomes.Length; i++)
+                {
+                    if (biomes[i].color == _col)
+                    {
+                        _bTypeIdx = i;
+                        break;
+                    }
+                }
 
                 //依据高度和群系种类，设置层级的瓦片种类
                 TileType _tileType = GetTileTypeByBiomeAt(_bTypeIdx, _x, _y, _height);
@@ -77,28 +83,44 @@ public class TerrainManager : Manager<TerrainManager>
         if (_y < _height - dirtLayerHeight)
         {
             //注意此处的先后优先顺序，最稀缺的最优先被生成
-            if (biomes[_bTypeIdx].diamondSpreadTex.GetPixel(_x, _y) == Color.white)
+            if (biomes[_bTypeIdx].ores.diamondSpreadTex.GetPixel(_x, _y) == Color.white)
                 return TileType.Diamond;
-            else if (biomes[_bTypeIdx].goldSpreadTex.GetPixel(_x, _y) == Color.white)
+            else if (biomes[_bTypeIdx].ores.goldSpreadTex.GetPixel(_x, _y) == Color.white)
                 return TileType.Gold;
-            else if (biomes[_bTypeIdx].ironSpreadTex.GetPixel(_x, _y) == Color.white)
+            else if (biomes[_bTypeIdx].ores.ironSpreadTex.GetPixel(_x, _y) == Color.white)
                 return TileType.Iron;
-            else if (biomes[_bTypeIdx].coalSpreadTex.GetPixel(_x, _y) == Color.white)
+            else if (biomes[_bTypeIdx].ores.coalSpreadTex.GetPixel(_x, _y) == Color.white)
                 return TileType.Coal;
             else
             {
-                return TileType.Stone;
+                if (_bTypeIdx == BiomeType.Desert.GetHashCode())
+                    return TileType.Sand;
+                else if (_bTypeIdx == BiomeType.Snow.GetHashCode())
+                    return TileType.Snow;
+                else
+                    return TileType.Stone;
             }
         }
         //设置泥土层
         else if (_y < _height - 1)
         {
-            return TileType.Dirt;
+            if (_bTypeIdx == BiomeType.Desert.GetHashCode())
+                return TileType.Sand;
+            else if (_bTypeIdx == BiomeType.Snow.GetHashCode())
+                return TileType.Snow;
+            else
+                return TileType.Dirt;
         }
         //设置草地层
         else if (_y < _height)
         {
-            return TileType.DirtGrass;
+            if (_bTypeIdx == BiomeType.Desert.GetHashCode())
+                return TileType.Sand;
+            else if (_bTypeIdx == BiomeType.Snow.GetHashCode())
+                return TileType.Snow;
+            else
+                return TileType.DirtGrass;
+
         }
         //设置空气层
         else
@@ -109,52 +131,36 @@ public class TerrainManager : Manager<TerrainManager>
     {
         //洞穴分布噪声纹理的生成
         DrawPerlinNoiseTexture(seed, ref caveSpreadTex, caveFreq, caveSize);
-        
-        //群系分布噪声纹理的生成
-        GenerateBiomes(seed);
+
+        //采用通过seed衍生的不同种子（因为使用的是相同的频率），生成不同群系的分布噪声纹理
+        biomeMapTex = new Texture2D(TilemapManager.instance.WorldLength, TilemapManager.instance.WorldLength);
+        DrawBiomeTextures(2 * seed, BiomeType.Grass);
+        DrawBiomeTextures(3 * seed, BiomeType.Desert);
+        DrawBiomeTextures(4 * seed, BiomeType.Snow);
     }
 
-    private void GenerateBiomes(int _seed)
+    private void DrawBiomeTextures(int _seed, BiomeType _biomeType)
     {
-        #region BiomeMapTex
-        if (biomeMapTex == null)
-            biomeMapTex = new Texture2D(TilemapManager.instance.WorldLength, TilemapManager.instance.WorldLength);
+        #region BiomeSettings
+        int _bIdx = _biomeType.GetHashCode();
+        DrawPerlinNoiseTexture(_seed, ref biomes[_bIdx].ores.coalSpreadTex, biomes[_bIdx].ores.coalRarity, biomes[_bIdx].ores.coalSize);
+        DrawPerlinNoiseTexture(_seed, ref biomes[_bIdx].ores.ironSpreadTex, biomes[_bIdx].ores.ironRarity, biomes[_bIdx].ores.ironSize);
+        DrawPerlinNoiseTexture(_seed, ref biomes[_bIdx].ores.goldSpreadTex, biomes[_bIdx].ores.goldRarity, biomes[_bIdx].ores.goldSize);
+        DrawPerlinNoiseTexture(_seed, ref biomes[_bIdx].ores.diamondSpreadTex, biomes[_bIdx].ores.diamondRarity, biomes[_bIdx].ores.diamondSize);
+        #endregion
+
+        #region BiomeSpread
         for (int x = 0; x < biomeMapTex.width; x++)
         {
             for (int y = 0; y < biomeMapTex.height; y++)
             {
-                //此处并未将_y纳入柏林噪声的生成，所以噪声纹理是呈竖线条纹生成的
-                float _v = Mathf.PerlinNoise((x + _seed) * biomeFreq, (x + _seed) * biomeFreq);
-                //float _v = Mathf.PerlinNoise((x + seed) * _freq, (y + seed) * _freq);
-
-                //根据Gradient色带位置的颜色来决定生物群系的种类
-                Color _col = biomeSpread.Evaluate(_v);
-                biomeMapTex.SetPixel(x, y, _col);
-
-                //存储颜色，其顺序应该是正确的
-                if (System.Array.IndexOf(biomeColors, _col) == -1)
-                    biomeColors[biomeColors.Length] = _col;
+                float _p = Mathf.PerlinNoise((x + _seed) * biomeFreq, (y + _seed) * biomeFreq);
+                if (_p <= biomes[_biomeType.GetHashCode()].biomeSize)
+                    biomeMapTex.SetPixel(x, y, biomes[_biomeType.GetHashCode()].color);
             }
         }
-        //更新材质纹理，使更改生效
         biomeMapTex.Apply();
         #endregion
-
-        #region SpecificBiomes
-        //采用通过seed衍生的不同种子，造成群系间的差异度
-        DrawBiomeSettingsTextures(2 * _seed, BiomeType.Grass);
-        DrawBiomeSettingsTextures(3 * _seed, BiomeType.Desert);
-        DrawBiomeSettingsTextures(4 * _seed, BiomeType.Snow);
-        #endregion
-    }
-
-    private void DrawBiomeSettingsTextures(int _seed, BiomeType _biomeType)
-    {
-        int _bIdx = _biomeType.GetHashCode();
-        DrawPerlinNoiseTexture(_seed, ref biomes[_bIdx].coalSpreadTex, biomes[_bIdx].coalRarity, biomes[_bIdx].coalSize);
-        DrawPerlinNoiseTexture(_seed, ref biomes[_bIdx].ironSpreadTex, biomes[_bIdx].ironRarity, biomes[_bIdx].ironSize);
-        DrawPerlinNoiseTexture(_seed, ref biomes[_bIdx].goldSpreadTex, biomes[_bIdx].goldRarity, biomes[_bIdx].goldSize);
-        DrawPerlinNoiseTexture(_seed, ref biomes[_bIdx].diamondSpreadTex, biomes[_bIdx].diamondRarity, biomes[_bIdx].diamondSize);
     }
 
     private void DrawPerlinNoiseTexture(int _seed, ref Texture2D _noiseTex, float _freq, float _size)
@@ -167,9 +173,9 @@ public class TerrainManager : Manager<TerrainManager>
             for(int y = 0; y < _noiseTex.height; y++)
             {
                 //依据位置(x,y)、随机种子、频率，使用柏林噪声生成一个在[0,1]间的噪声值（作为rgb的话越大越接近白色）
-                float _v = Mathf.PerlinNoise((x + _seed) * _freq, (y + _seed) * _freq);
+                float _p = Mathf.PerlinNoise((x + _seed) * _freq, (y + _seed) * _freq);
                 //以某个[0,1]范围内的阈值对噪声值_v以划分界限，白色作为洞穴、矿石等小块空缺
-                if (_v <= _size)
+                if (_p <= _size)
                     _noiseTex.SetPixel(x, y, Color.white);
                 else
                     _noiseTex.SetPixel(x, y, Color.black);
@@ -190,28 +196,39 @@ enum BiomeType
 [System.Serializable]
 class BiomeSettings
 {
-    //[Header("Biome Type")]
-    //public BiomeType type;
+    [Header("Biome Type")]
+    //public BiomeType type;                  //群系的种类
+    public Color color;                     //该群系显示在噪声图中的颜色
 
+    [Header("Biome Spread")]
+    public float biomeSize = 0.3f;          //群系的大小
+
+    [Header("Ore Settings")]
+    public OreSettings ores;                //群系的矿物分布
+}
+
+[System.Serializable]
+class OreSettings
+{
     [Header("Ore Spread")]
     public Texture2D coalSpreadTex;         //煤矿生成的分布噪声图
     public Texture2D ironSpreadTex;         //铁矿生成的分布噪声图
     public Texture2D goldSpreadTex;         //金矿生成的分布噪声图
     public Texture2D diamondSpreadTex;      //钻矿生成的分布噪声图
 
-    [Header("Coal Settings")]
+    [Header("Coal")]
     public float coalRarity = 0.2f;         //煤矿稀缺度
     public float coalSize = 0.18f;          //煤矿块大小
-    
-    [Header("Iron Settings")]
+
+    [Header("Iron")]
     public float ironRarity = 0.18f;        //铁矿稀缺度
     public float ironSize = 0.16f;          //铁矿块大小
-    
-    [Header("Gold Settings")]
+
+    [Header("Gold")]
     public float goldRarity = 0.13f;        //金矿稀缺度
     public float goldSize = 0.11f;          //金矿块大小
-    
-    [Header("Diamond Settings")]
+
+    [Header("Diamond")]
     public float diamondRarity = 0.12f;     //钻矿稀缺度
     public float diamondSize = 0.02f;       //钻矿块大小
 }
