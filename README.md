@@ -6,7 +6,7 @@ This repo adopts [MIT License](https://spdx.org/licenses/MIT)
 ## About
 This repo is a simple demo for 2D sandbox terrain generation
 
-![img.png](https://github.com/WhythZ/SandboxTerrain2D/tree/master/Showcase/img.png)
+![img.png](https://github.com/WhythZ/SandboxTerrain2D/blob/master/Showcase/img.png)
 
 The structure of the scripts is as below
 
