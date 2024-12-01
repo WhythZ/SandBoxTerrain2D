@@ -21,6 +21,11 @@ public class TilemapManager : Manager<TilemapManager>
     private TileType[] tileTypesBeforePlacing;                 //存放所有预放置的瓦片类型
     [SerializeField] private GameObject[] tiles;               //存放所有瓦片GameObject
 
+    [Header("Tree Settings")]
+    [SerializeField] private float treeChance = 0.07f;        //树木在地表草地上生成的概率
+    [SerializeField] private int maxTreeHeight = 7;           //树干的最大高度
+    [SerializeField] private int minTreeHeight = 4;           //树干的最小高度
+
     public void InitTilemap()
     {
         #region Chunks
@@ -77,12 +82,12 @@ public class TilemapManager : Manager<TilemapManager>
     private void DeriveTreeAt(int _x, int _y)
     {
         //树的生成是考究概率的
-        int _chance = Mathf.RoundToInt(TerrainManager.instance.TreeChance * 100);
+        int _chance = Mathf.RoundToInt(treeChance * 100);
         int _random = UnityEngine.Random.Range(0, 100);
         if (_random >= _chance) return;
 
         //预设置树干
-        int _height = UnityEngine.Random.Range(TerrainManager.instance.MinTreeHeight, TerrainManager.instance.MaxTreeHeight);
+        int _height = UnityEngine.Random.Range(minTreeHeight, maxTreeHeight);
         for (int i = 0; i < _height; i++)
             PreSetTileAt(TileType.TreeLog, _x, _y + i);
 

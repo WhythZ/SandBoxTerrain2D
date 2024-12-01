@@ -15,7 +15,7 @@ public abstract class TileObject : MonoBehaviour
     public TileType Type { get => type; }
 
     [Header("Texture")]
-    [SerializeField] protected Sprite defaultTexture;
+    [SerializeField] protected Sprite[] textures;
 
     protected virtual void Start()
     {
@@ -25,7 +25,7 @@ public abstract class TileObject : MonoBehaviour
         //anim = GetComponent<Animator>(); 
         #endregion
 
-        //初始化瓦片材质
-        GetComponent<SpriteRenderer>().sprite = defaultTexture;
+        //初始化瓦片材质为任意一种
+        GetComponentInParent<SpriteRenderer>().sprite = textures[UnityEngine.Random.Range(0, textures.Length)];
     }
 }

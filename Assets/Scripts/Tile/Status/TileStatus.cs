@@ -2,6 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class _06_Coal : TileObject
+public class TileStatus : MonoBehaviour
 {
 }

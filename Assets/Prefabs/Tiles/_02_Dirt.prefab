@@ -46,7 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
-  defaultTexture: {fileID: 21300000, guid: a970b33520cf9c5459dbdc21fc82a735, type: 3}
+  textures:
+  - {fileID: 21300000, guid: a970b33520cf9c5459dbdc21fc82a735, type: 3}
 --- !u!212 &3156656856169230618
 SpriteRenderer:
   m_ObjectHideFlags: 0
