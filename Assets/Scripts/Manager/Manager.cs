@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//¿É¼Ì³Ğ¹ÜÀíÆ÷µ¥ÀıµÄ³éÏó»ùÀà£¬·ºĞÍÔ¼ÊøÎª¸ÃÀàµÄ×ÓÀà£¨MonoBehavior±ØĞë¹ÒÔØÔÚGameObjectÉÏ£¬¶øÎŞ·¨±»newÊµÀı»¯£¬ËùÒÔ²»Ó¦Ê¹ÓÃnewÔ¼Êø£©
+//å¯ç»§æ‰¿çš„ç®¡ç†å™¨å•ä¾‹æŠ½è±¡åŸºç±»ï¼Œæ³›å‹çº¦æŸä¸ºè¯¥ç±»çš„å­ç±»ï¼ˆMonoBehaviorå¿…é¡»æŒ‚è½½åœ¨GameObjectä¸Šï¼Œè€Œæ— æ³•è¢«newå®ä¾‹åŒ–ï¼Œæ‰€ä»¥ä¸åº”ä½¿ç”¨newçº¦æŸï¼‰
 public abstract class Manager<T> : MonoBehaviour where T : Manager<T>
 {
-    //Íâ²¿Í¨¹ı´ËÊôĞÔ·ÃÎÊ¸Ã¹ÜÀíÆ÷µ¥Àı
+    //å¤–éƒ¨é€šè¿‡æ­¤å­—æ®µè®¿é—®è¯¥ç®¡ç†å™¨å•ä¾‹
     public static T instance;
 
     protected virtual void Awake()
     {
         if (instance != null)
-            Destroy(instance.gameObject); //È·±£Ö»ÓĞÒ»¸ö¹ÜÀíÆ÷µ¥Àı
+            Destroy(instance.gameObject); //ç¡®ä¿åªæœ‰ä¸€ä¸ªç®¡ç†å™¨å•ä¾‹
         else
-            instance = (T)this; //ÒòÎŞ·¨new£¬¹ÊÇ¿×ªÎª×ÓÀà¹ÜÀíÆ÷ÀàĞÍT
+            instance = (T)this; //å› æ— æ³•newï¼Œæ•…å¼ºè½¬ä¸ºå­ç±»ç®¡ç†å™¨ç±»å‹T
     }
 }
