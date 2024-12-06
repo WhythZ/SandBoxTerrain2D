@@ -22,9 +22,9 @@ public class TilemapManager : Manager<TilemapManager>
     [SerializeField] private GameObject[] tiles;               //存放所有瓦片GameObject
 
     [Header("Tree Settings")]
-    [SerializeField] private float treeChance = 0.07f;        //树木在地表草地上生成的概率
-    [SerializeField] private int maxTreeHeight = 7;           //树干的最大高度
-    [SerializeField] private int minTreeHeight = 4;           //树干的最小高度
+    [SerializeField] private float treeChance = 0.07f;         //树木在地表草地上生成的概率
+    [SerializeField] private int maxTreeHeight = 7;            //树干的最大高度
+    [SerializeField] private int minTreeHeight = 4;            //树干的最小高度
 
     public void InitTilemap()
     {
@@ -126,20 +126,4 @@ public class TilemapManager : Manager<TilemapManager>
         tiles[_x + _y * worldLength] = _newTile;
         #endregion
     }
-}
-
-public enum TileType
-{
-    Air = 0,
-    Stone = 1,
-    Dirt = 2,
-    DirtGrass = 3,
-    TreeLog = 4,
-    TreeLeaf = 5,
-    Coal = 6,
-    Iron = 7,
-    Gold = 8,
-    Diamond = 9,
-    Sand = 10,
-    Snow = 11
 }

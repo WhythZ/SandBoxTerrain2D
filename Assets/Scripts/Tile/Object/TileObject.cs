@@ -29,3 +29,19 @@ public abstract class TileObject : MonoBehaviour
         GetComponentInParent<SpriteRenderer>().sprite = textures[UnityEngine.Random.Range(0, textures.Length)];
     }
 }
+
+public enum TileType
+{
+    Air = 0,
+    Stone = 1,
+    Dirt = 2,
+    DirtGrass = 3,
+    TreeLog = 4,
+    TreeLeaf = 5,
+    Coal = 6,
+    Iron = 7,
+    Gold = 8,
+    Diamond = 9,
+    Sand = 10,
+    Snow = 11
+}
