@@ -11,45 +11,45 @@ using UnityEngine.UIElements;
 public class TerrainManager : Manager<TerrainManager>
 {
     [Header("Perlin Noise Seed")]
-    [SerializeField] private int seed;                        //Ëæ»úÉú³ÉµÄËæ»úÖÖ×Ó
+    [SerializeField] private int seed;                        //éšæœºç”Ÿæˆçš„éšæœºç§å­
 
     [Header("Terrain Shape")]
-    [SerializeField] private float terrainRelief = 0.05f;     //ÓëµØĞÎµØÆğ·üÏà¹ØµÄ°ØÁÖÔëÉùÆµÂÊ
-    [SerializeField] private int heightMultiplier = 35;       //ÎªµØĞÎÔö¼Ó[0,~]ÄÚµÄËæ»úºñ¶ÈÔöÁ¿
-    [SerializeField] private int heightAddition = 50;         //µØĞÎµÄ»ù´¡ºñ¶È
-    [SerializeField] private int dirtLayerHeight = 5;         //ÄàÍÁ²ãµÄºñ¶È
+    [SerializeField] private float terrainRelief = 0.05f;     //ä¸åœ°å½¢åœ°èµ·ä¼ç›¸å…³çš„æŸæ—å™ªå£°é¢‘ç‡
+    [SerializeField] private int heightMultiplier = 35;       //ä¸ºåœ°å½¢å¢åŠ [0,~]å†…çš„éšæœºåšåº¦å¢é‡
+    [SerializeField] private int heightAddition = 50;         //åœ°å½¢çš„åŸºç¡€åšåº¦
+    [SerializeField] private int dirtLayerHeight = 5;         //æ³¥åœŸå±‚çš„åšåº¦
 
     [Header("Cave Settings")]
-    [SerializeField] private Texture2D caveSpreadTex;         //´æ´¢Éú³ÉµÄµØÍ¼¶´Ñ¨µÄÔëÉùÍ¼
-    [SerializeField] private bool isGenerateCaves = false;    //ÊÇ·ñÉú³É¶´Ñ¨
-    [SerializeField] private float caveFreq = 0.08f;          //Óë¿Õ¶´³öÏÖµÄÆµÂÊÕıÏà¹ØµÄ°ØÁÖÔëÉùÆµÂÊ
-    [SerializeField] private float caveSize = 0.2f;           //¸ÃÖµÔ½´ó£¬Ô½ÄÜÌåÏÖcaveFreq£¨¶´Ñ¨¶à£©
+    [SerializeField] private Texture2D caveSpreadTex;         //å­˜å‚¨ç”Ÿæˆçš„åœ°å›¾æ´ç©´çš„å™ªå£°å›¾
+    [SerializeField] private bool isGenerateCaves = false;    //æ˜¯å¦ç”Ÿæˆæ´ç©´
+    [SerializeField] private float caveFreq = 0.08f;          //ä¸ç©ºæ´å‡ºç°çš„é¢‘ç‡æ­£ç›¸å…³çš„æŸæ—å™ªå£°é¢‘ç‡
+    [SerializeField] private float caveSize = 0.2f;           //è¯¥å€¼è¶Šå¤§ï¼Œè¶Šèƒ½ä½“ç°caveFreqï¼ˆæ´ç©´å¤šï¼‰
 
     [Header("Biome Settings")]
-    [SerializeField] private Texture2D biomeMapTex;           //ÉúÎïÈºÏµµÄ·Ö²¼ÔëÉùÍ¼
-    public float biomeFreq = 0.5f;                            //ÈºÏµµÄÆµÂÊ
-    [SerializeField] private BiomeSettings[] biomes;          //ÉèÖÃ¸÷ÈºÏµµÄÊôĞÔ
+    [SerializeField] private Texture2D biomeMapTex;           //ç”Ÿç‰©ç¾¤ç³»çš„åˆ†å¸ƒå™ªå£°å›¾
+    public float biomeFreq = 0.5f;                            //ç¾¤ç³»çš„é¢‘ç‡
+    [SerializeField] private BiomeSettings[] biomes;          //è®¾ç½®å„ç¾¤ç³»çš„å±æ€§
 
     public void GenerateTerrain(int _seed)
     {
         #region NoisesGeneration
-        //ÏÈÉèÖÃÖÖ×Ó£¬ºóÉú³ÉµØÍ¼ÖĞ¸÷ÖÖÔªËØµÄÔëÉùÎÆÀí
+        //å…ˆè®¾ç½®ç§å­ï¼Œåç”Ÿæˆåœ°å›¾ä¸­å„ç§å…ƒç´ çš„å™ªå£°çº¹ç†
         seed = _seed;
         GenerateAllTextures();
         #endregion
 
-        //ÔÚÊµ¼ÊÉú³ÉµØĞÎÇ°ÏÈ³õÊ¼»¯Çø¿é
+        //åœ¨å®é™…ç”Ÿæˆåœ°å½¢å‰å…ˆåˆå§‹åŒ–åŒºå—
         TilemapManager.instance.InitTilemap();
 
         #region TilesPreSetting
-        //È¡ÓÃnoiseTexture×ø±êÏµµÄº¯Êıy=PerlinNoise(f(x))ÇúÏßµÄÏÂ·½²¿·Ö×÷ÎªµØĞÎ
+        //å–ç”¨noiseTextureåæ ‡ç³»çš„å‡½æ•°y=PerlinNoise(f(x))æ›²çº¿çš„ä¸‹æ–¹éƒ¨åˆ†ä½œä¸ºåœ°å½¢
         for (int _y = 0; _y < TilemapManager.instance.WorldLength; _y++)
         {
             for (int _x = 0; _x < TilemapManager.instance.WorldLength; _x++)
             {
-                //ÓÃ_x¶ÔÓÃÓÚ½ØÈ¡Õû¸öµØÍ¼µÄÇúÏßÒıÈëÒ»¸ö[0,1]·¶Î§µÄµÄ°ØÁÖÔëÉùÖµ£¬ÔÚ´Ë»ù´¡ÉÏÔö¼ÓÒ»Ğ©¼ÆËã²ÎÊı£¬ÒÔÉú³ÉĞèÒªµÄ°¼Í¹²»Æ½µÄµØĞÎ
+                //ç”¨_xå¯¹ç”¨äºæˆªå–æ•´ä¸ªåœ°å›¾çš„æ›²çº¿å¼•å…¥ä¸€ä¸ª[0,1]èŒƒå›´çš„çš„æŸæ—å™ªå£°å€¼ï¼Œåœ¨æ­¤åŸºç¡€ä¸Šå¢åŠ ä¸€äº›è®¡ç®—å‚æ•°ï¼Œä»¥ç”Ÿæˆéœ€è¦çš„å‡¹å‡¸ä¸å¹³çš„åœ°å½¢
                 float _height = Mathf.PerlinNoise((_x + seed) * terrainRelief, seed * terrainRelief) * heightMultiplier + heightAddition;
-                //»ñÈ¡µ±Ç°ÉúÎïÈºÏµÖÖÀà£¬¶ÔÓÚÎŞÈºÏµ£¬µÄÊ¹ÓÃ0×÷ÎªÄ¬ÈÏÈºÏµÖÖÀà
+                //è·å–å½“å‰ç”Ÿç‰©ç¾¤ç³»ç§ç±»ï¼Œå¯¹äºæ— ç¾¤ç³»ï¼Œçš„ä½¿ç”¨0ä½œä¸ºé»˜è®¤ç¾¤ç³»ç§ç±»
                 int _bTypeIdx = 0;
                 Color _col = biomeMapTex.GetPixel(_x, _y);
                 for (int i = 0; i < biomes.Length; i++)
@@ -61,28 +61,28 @@ public class TerrainManager : Manager<TerrainManager>
                     }
                 }
 
-                //ÒÀ¾İ¸ß¶ÈºÍÈºÏµÖÖÀà£¬ÉèÖÃ²ã¼¶µÄÍßÆ¬ÖÖÀà
+                //ä¾æ®é«˜åº¦å’Œç¾¤ç³»ç§ç±»ï¼Œè®¾ç½®å±‚çº§çš„ç“¦ç‰‡ç§ç±»
                 TileType _tileType = GetTileTypeByBiomeAt(_bTypeIdx, _x, _y, _height);
-                //¿ØÖÆÊÇ·ñÉú³É¶´Ñ¨
+                //æ§åˆ¶æ˜¯å¦ç”Ÿæˆæ´ç©´
                 if (isGenerateCaves && caveSpreadTex.GetPixel(_x, _y) == Color.white)
                     _tileType = TileType.Air;
 
-                //×îÖÕÉèÖÃ¸Ãµã´¦µÄÍßÆ¬
+                //æœ€ç»ˆè®¾ç½®è¯¥ç‚¹å¤„çš„ç“¦ç‰‡
                 TilemapManager.instance.PreSetTileAt(_tileType, _x, _y);
             }
         }
         #endregion
 
-        //Êµ¼Ê¸ù¾İÉÏÊöÔ¤ÉèÖÃµÄÍßÆ¬ÀàĞÍÉú³ÉÍßÆ¬µØÍ¼
+        //å®é™…æ ¹æ®ä¸Šè¿°é¢„è®¾ç½®çš„ç“¦ç‰‡ç±»å‹ç”Ÿæˆç“¦ç‰‡åœ°å›¾
         TilemapManager.instance.GenerateTilemap();
     }
 
     private TileType GetTileTypeByBiomeAt(int _bTypeIdx, int _x, int _y, float _height)
     {
-        //ÉèÖÃÑÒÊ¯²ã£¨º¬¿óÊ¯£©
+        //è®¾ç½®å²©çŸ³å±‚ï¼ˆå«çŸ¿çŸ³ï¼‰
         if (_y < _height - dirtLayerHeight)
         {
-            //×¢Òâ´Ë´¦µÄÏÈºóÓÅÏÈË³Ğò£¬×îÏ¡È±µÄ×îÓÅÏÈ±»Éú³É
+            //æ³¨æ„æ­¤å¤„çš„å…ˆåä¼˜å…ˆé¡ºåºï¼Œæœ€ç¨€ç¼ºçš„æœ€ä¼˜å…ˆè¢«ç”Ÿæˆ
             if (biomes[_bTypeIdx].ores.diamondSpreadTex.GetPixel(_x, _y) == Color.white)
                 return TileType.Diamond;
             else if (biomes[_bTypeIdx].ores.goldSpreadTex.GetPixel(_x, _y) == Color.white)
@@ -101,7 +101,7 @@ public class TerrainManager : Manager<TerrainManager>
                     return TileType.Stone;
             }
         }
-        //ÉèÖÃÄàÍÁ²ã
+        //è®¾ç½®æ³¥åœŸå±‚
         else if (_y < _height - 1)
         {
             if (_bTypeIdx == BiomeType.Desert.GetHashCode())
@@ -111,7 +111,7 @@ public class TerrainManager : Manager<TerrainManager>
             else
                 return TileType.Dirt;
         }
-        //ÉèÖÃ²İµØ²ã
+        //è®¾ç½®è‰åœ°å±‚
         else if (_y < _height)
         {
             if (_bTypeIdx == BiomeType.Desert.GetHashCode())
@@ -122,17 +122,17 @@ public class TerrainManager : Manager<TerrainManager>
                 return TileType.DirtGrass;
 
         }
-        //ÉèÖÃ¿ÕÆø²ã
+        //è®¾ç½®ç©ºæ°”å±‚
         else
             return TileType.Air;
     }
 
     private void GenerateAllTextures()
     {
-        //¶´Ñ¨·Ö²¼ÔëÉùÎÆÀíµÄÉú³É
+        //æ´ç©´åˆ†å¸ƒå™ªå£°çº¹ç†çš„ç”Ÿæˆ
         DrawPerlinNoiseTexture(seed, ref caveSpreadTex, caveFreq, caveSize);
 
-        //²ÉÓÃÍ¨¹ıseedÑÜÉúµÄ²»Í¬ÖÖ×Ó£¨ÒòÎªÊ¹ÓÃµÄÊÇÏàÍ¬µÄÆµÂÊ£©£¬Éú³É²»Í¬ÈºÏµµÄ·Ö²¼ÔëÉùÎÆÀí
+        //é‡‡ç”¨é€šè¿‡seedè¡ç”Ÿçš„ä¸åŒç§å­ï¼ˆå› ä¸ºä½¿ç”¨çš„æ˜¯ç›¸åŒçš„é¢‘ç‡ï¼‰ï¼Œç”Ÿæˆä¸åŒç¾¤ç³»çš„åˆ†å¸ƒå™ªå£°çº¹ç†
         biomeMapTex = new Texture2D(TilemapManager.instance.WorldLength, TilemapManager.instance.WorldLength);
         DrawBiomeTextures(2 * seed, BiomeType.Grass);
         DrawBiomeTextures(3 * seed, BiomeType.Desert);
@@ -165,23 +165,23 @@ public class TerrainManager : Manager<TerrainManager>
 
     private void DrawPerlinNoiseTexture(int _seed, ref Texture2D _noiseTex, float _freq, float _size)
     {
-        //°´ÕÕÊÀ½çµØĞÎµÄ±ß³¤³õÊ¼»¯ÔëÉùÍ¼ĞÎ
+        //æŒ‰ç…§ä¸–ç•Œåœ°å½¢çš„è¾¹é•¿åˆå§‹åŒ–å™ªå£°å›¾å½¢
         _noiseTex = new Texture2D(TilemapManager.instance.WorldLength, TilemapManager.instance.WorldLength);
-        //ÖğÏñËØ¼ÆËãÔëÉùÖµ
+        //é€åƒç´ è®¡ç®—å™ªå£°å€¼
         for (int x = 0; x < _noiseTex.width; x++)
         {
             for(int y = 0; y < _noiseTex.height; y++)
             {
-                //ÒÀ¾İÎ»ÖÃ(x,y)¡¢Ëæ»úÖÖ×Ó¡¢ÆµÂÊ£¬Ê¹ÓÃ°ØÁÖÔëÉùÉú³ÉÒ»¸öÔÚ[0,1]¼äµÄÔëÉùÖµ£¨×÷ÎªrgbµÄ»°Ô½´óÔ½½Ó½ü°×É«£©
+                //ä¾æ®ä½ç½®(x,y)ã€éšæœºç§å­ã€é¢‘ç‡ï¼Œä½¿ç”¨æŸæ—å™ªå£°ç”Ÿæˆä¸€ä¸ªåœ¨[0,1]é—´çš„å™ªå£°å€¼ï¼ˆä½œä¸ºrgbçš„è¯è¶Šå¤§è¶Šæ¥è¿‘ç™½è‰²ï¼‰
                 float _p = Mathf.PerlinNoise((x + _seed) * _freq, (y + _seed) * _freq);
-                //ÒÔÄ³¸ö[0,1]·¶Î§ÄÚµÄãĞÖµ¶ÔÔëÉùÖµ_vÒÔ»®·Ö½çÏŞ£¬°×É«×÷Îª¶´Ñ¨¡¢¿óÊ¯µÈĞ¡¿é¿ÕÈ±
+                //ä»¥æŸä¸ª[0,1]èŒƒå›´å†…çš„é˜ˆå€¼å¯¹å™ªå£°å€¼_pä»¥åˆ’åˆ†ç•Œé™ï¼Œç™½è‰²ä½œä¸ºæ´ç©´ã€çŸ¿çŸ³ç­‰å°å—ç©ºç¼º
                 if (_p <= _size)
                     _noiseTex.SetPixel(x, y, Color.white);
                 else
                     _noiseTex.SetPixel(x, y, Color.black);
             }
         }
-        //¸üĞÂ²ÄÖÊÎÆÀí£¬Ê¹¸ü¸ÄÉúĞ§
+        //æ›´æ–°æè´¨çº¹ç†ï¼Œä½¿æ›´æ”¹ç”Ÿæ•ˆ
         _noiseTex.Apply();
     }
 }
@@ -197,38 +197,38 @@ enum BiomeType
 class BiomeSettings
 {
     [Header("Biome Type")]
-    //public BiomeType type;                  //ÈºÏµµÄÖÖÀà
-    public Color color;                     //¸ÃÈºÏµÏÔÊ¾ÔÚÔëÉùÍ¼ÖĞµÄÑÕÉ«
+    //public BiomeType type;                  //ç¾¤ç³»çš„ç§ç±»
+    public Color color;                     //è¯¥ç¾¤ç³»æ˜¾ç¤ºåœ¨å™ªå£°å›¾ä¸­çš„é¢œè‰²
 
     [Header("Biome Spread")]
-    public float biomeSize = 0.3f;          //ÈºÏµµÄ´óĞ¡
+    public float biomeSize = 0.3f;          //ç¾¤ç³»çš„å¤§å°
 
     [Header("Ore Settings")]
-    public OreSettings ores;                //ÈºÏµµÄ¿óÎï·Ö²¼
+    public OreSettings ores;                //ç¾¤ç³»çš„çŸ¿ç‰©åˆ†å¸ƒ
 }
 
 [System.Serializable]
 class OreSettings
 {
     [Header("Ore Spread")]
-    public Texture2D coalSpreadTex;         //Ãº¿óÉú³ÉµÄ·Ö²¼ÔëÉùÍ¼
-    public Texture2D ironSpreadTex;         //Ìú¿óÉú³ÉµÄ·Ö²¼ÔëÉùÍ¼
-    public Texture2D goldSpreadTex;         //½ğ¿óÉú³ÉµÄ·Ö²¼ÔëÉùÍ¼
-    public Texture2D diamondSpreadTex;      //×ê¿óÉú³ÉµÄ·Ö²¼ÔëÉùÍ¼
+    public Texture2D coalSpreadTex;         //ç…¤çŸ¿ç”Ÿæˆçš„åˆ†å¸ƒå™ªå£°å›¾
+    public Texture2D ironSpreadTex;         //é“çŸ¿ç”Ÿæˆçš„åˆ†å¸ƒå™ªå£°å›¾
+    public Texture2D goldSpreadTex;         //é‡‘çŸ¿ç”Ÿæˆçš„åˆ†å¸ƒå™ªå£°å›¾
+    public Texture2D diamondSpreadTex;      //é’»çŸ¿ç”Ÿæˆçš„åˆ†å¸ƒå™ªå£°å›¾
 
     [Header("Coal")]
-    public float coalRarity = 0.2f;         //Ãº¿óÏ¡È±¶È
-    public float coalSize = 0.18f;          //Ãº¿ó¿é´óĞ¡
+    public float coalRarity = 0.2f;         //ç…¤çŸ¿ç¨€ç¼ºåº¦
+    public float coalSize = 0.18f;          //ç…¤çŸ¿å—å¤§å°
 
     [Header("Iron")]
-    public float ironRarity = 0.18f;        //Ìú¿óÏ¡È±¶È
-    public float ironSize = 0.16f;          //Ìú¿ó¿é´óĞ¡
+    public float ironRarity = 0.18f;        //é“çŸ¿ç¨€ç¼ºåº¦
+    public float ironSize = 0.16f;          //é“çŸ¿å—å¤§å°
 
     [Header("Gold")]
-    public float goldRarity = 0.13f;        //½ğ¿óÏ¡È±¶È
-    public float goldSize = 0.11f;          //½ğ¿ó¿é´óĞ¡
+    public float goldRarity = 0.13f;        //é‡‘çŸ¿ç¨€ç¼ºåº¦
+    public float goldSize = 0.11f;          //é‡‘çŸ¿å—å¤§å°
 
     [Header("Diamond")]
-    public float diamondRarity = 0.12f;     //×ê¿óÏ¡È±¶È
-    public float diamondSize = 0.02f;       //×ê¿ó¿é´óĞ¡
+    public float diamondRarity = 0.12f;     //é’»çŸ¿ç¨€ç¼ºåº¦
+    public float diamondSize = 0.02f;       //é’»çŸ¿å—å¤§å°
 }
